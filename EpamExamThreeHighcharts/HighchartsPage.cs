@@ -45,19 +45,19 @@ namespace EpamExamThreeHighcharts
         {
             foreach (
                 IWebElement item in
-                    Container.FindElements(By.ClassName(HighchartsPage.LegendClassName)))
+                    Container.FindElements(By.ClassName(LegendClassName)))
             {
                 string tag = item.FindElement(By.TagName("text")).Text;
-                if (!tag.Contains(HighchartsPage.EmployeeKeyword)) item.Click();
+                if (!tag.Contains(EmployeeKeyword)) item.Click();
             }
         }
 
         public IWebElement LocateSeries()
         {
-            IWebElement seriesElement = Container.FindElement(By.ClassName(HighchartsPage.SeriesClassName));
+            IWebElement seriesElement = Container.FindElement(By.ClassName(SeriesClassName));
             foreach (
                 IWebElement item in
-                    Container.FindElements(By.ClassName(HighchartsPage.SeriesClassName)))
+                    Container.FindElements(By.ClassName(SeriesClassName)))
             {
                 if (item.GetAttribute("visibility") != "hidden" &&
                     item.ContainsElement(By.TagName("path")))
