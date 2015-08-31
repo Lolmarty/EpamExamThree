@@ -52,7 +52,7 @@ namespace EpamExamThreeHighcharts
             }
         }
 
-        public IWebElement LocateSeries()
+        public IWebElement LocateVisibleSeries()
         {
             IWebElement seriesElement = Container.FindElement(By.ClassName(SeriesClassName));
             foreach (

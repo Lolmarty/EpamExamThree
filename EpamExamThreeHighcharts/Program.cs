@@ -44,7 +44,7 @@ namespace EpamExamThreeHighcharts
         {
             HighchartsPage page = new HighchartsPage(driver);
             page.HideNonEmployeeCharts();
-            IWebElement seriesElement = page.LocateSeries();
+            IWebElement seriesElement = page.LocateVisibleSeries();
             List<Point> graph = GeneratePointsFromSeries(seriesElement);
 
             List<string> tooltip = GenerateTooltipMessages(driver, graph, page);
@@ -94,7 +94,6 @@ namespace EpamExamThreeHighcharts
                 .Build()
                 .Perform();
             List<string> tooltip = new List<string>();
-            //tooltip.Add("");
             for (int point = 1; point < graph.Count; point++)
             {
                 for (int i = 0; i <= graph[point].X - graph[point - 1].X; i+=Step)
@@ -110,7 +109,6 @@ namespace EpamExamThreeHighcharts
                     .Build()
                     .Perform();
             }
-            //tooltip.RemoveAt(0);
             return tooltip;
         }
 
