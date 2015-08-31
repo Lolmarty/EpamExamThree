@@ -17,4 +17,5 @@ C какими именно данными искать соответствие
   * Selenium WebDriver & Selenium WebDriver Support Classes
   * ChromeDriver
 * построить проект и в Test Explorer запустить тест.
+
 Ожидаемым результатом есть возникновение окна браузера Google Chrome со страницей highcharts и последующим возникновением всплывающих сообщений вдоль графика Highsoft employees, после чего окно будет закрыто и тест будет пройден.
