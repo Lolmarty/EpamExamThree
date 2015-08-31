@@ -41,5 +41,33 @@ namespace EpamExamThreeHighcharts
         [FindsBy(How = How.Id, Using = "container")]
         public IWebElement Container { get; set; }
 
+        public void HideNonEmployeeCharts()
+        {
+            foreach (
+                IWebElement item in
+                    Container.FindElements(By.ClassName(HighchartsPage.LegendClassName)))
+            {
+                string tag = item.FindElement(By.TagName("text")).Text;
+                if (!tag.Contains(HighchartsPage.EmployeeKeyword)) item.Click();
+            }
+        }
+
+        public IWebElement LocateSeries()
+        {
+            IWebElement seriesElement = Container.FindElement(By.ClassName(HighchartsPage.SeriesClassName));
+            foreach (
+                IWebElement item in
+                    Container.FindElements(By.ClassName(HighchartsPage.SeriesClassName)))
+            {
+                if (item.GetAttribute("visibility") != "hidden" &&
+                    item.ContainsElement(By.TagName("path")))
+                {
+                    seriesElement = item;
+                    break;
+                }
+            }
+            return seriesElement;
+        }
+
     }
 }

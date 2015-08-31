@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -42,8 +43,8 @@ namespace EpamExamThreeHighcharts
         public void TestChartsTooltip()
         {
             HighchartsPage page = new HighchartsPage(driver);
-            HideOtherCharts(page);
-            IWebElement seriesElement = LocateSeries(page);
+            page.HideNonEmployeeCharts();
+            IWebElement seriesElement = page.LocateSeries();
             List<Point> graph = GeneratePointsFromSeries(seriesElement);
 
             List<string> tooltip = GenerateTooltipMessages(driver, graph, page);
@@ -55,36 +56,6 @@ namespace EpamExamThreeHighcharts
         public void TearDown()
         {
             driver.Close();
-        }
-
-
-
-        private static void HideOtherCharts(HighchartsPage page)
-        {
-            foreach (
-                IWebElement item in
-                    page.Container.FindElements(By.ClassName(HighchartsPage.LegendClassName)))
-            {
-                string tag = item.FindElement(By.TagName("text")).Text;
-                if (!tag.Contains(HighchartsPage.EmployeeKeyword)) item.Click();
-            }
-        }
-
-        private static IWebElement LocateSeries(HighchartsPage page)
-        {
-            IWebElement seriesElement = page.Container.FindElement(By.ClassName(HighchartsPage.SeriesClassName));
-            foreach (
-                IWebElement item in
-                    page.Container.FindElements(By.ClassName(HighchartsPage.SeriesClassName)))
-            {
-                if (item.GetAttribute("visibility") != "hidden" &&
-                    item.ContainsElement(By.TagName("path")))
-                {
-                    seriesElement = item;
-                    break;
-                }
-            }
-            return seriesElement;
         }
 
         private static List<Point> GeneratePointsFromSeries(IWebElement seriesElement)
@@ -99,14 +70,14 @@ namespace EpamExamThreeHighcharts
                     .Select(line => line.Trim().Split(' ').ToArray())
                     .ToArray();
             List<Point> graph = new List<Point>();
-
-            double x = ParseWithLocale(coordinates[0][1]);
-            double y = ParseWithLocale(coordinates[0][2]);
+            
+            double x = double.Parse(coordinates[0][1], CultureInfo.InvariantCulture);
+            double y = double.Parse(coordinates[0][2], CultureInfo.InvariantCulture);
             graph.Add(new Point((int) x, (int) y));
             for (int i = 1; i < coordinates.Length - 1; i++)
             {
-                x = ParseWithLocale(coordinates[i][0]);
-                y = ParseWithLocale(coordinates[i][3]);
+                x = double.Parse(coordinates[i][0], CultureInfo.InvariantCulture);
+                y = double.Parse(coordinates[i][3], CultureInfo.InvariantCulture);
                 graph.Add(new Point((int) x, (int) y));
             }
             return graph;
@@ -117,18 +88,19 @@ namespace EpamExamThreeHighcharts
         {
             Actions action = new Actions(driver);
             
+            
             action.MoveToElement(page.RootElement, 0, 0)
                 .MoveByOffset(graph[0].X, graph[0].Y)
                 .Build()
                 .Perform();
             List<string> tooltip = new List<string>();
-            tooltip.Add("");
+            //tooltip.Add("");
             for (int point = 1; point < graph.Count; point++)
             {
                 for (int i = 0; i <= graph[point].X - graph[point - 1].X; i+=Step)
                 {
                     action.MoveByOffset(Step, 0).Build().Perform();
-                    if (tooltip.Last() != page.TooltipElement.Text &&
+                    if (tooltip.LastOrDefault() != page.TooltipElement.Text &&
                         page.TooltipElement.Text.Contains(HighchartsPage.EmployeeKeyword))
                     {
                         tooltip.Add(page.TooltipElement.Text);
@@ -138,7 +110,7 @@ namespace EpamExamThreeHighcharts
                     .Build()
                     .Perform();
             }
-            tooltip.RemoveAt(0);
+            //tooltip.RemoveAt(0);
             return tooltip;
         }
 
@@ -166,19 +138,6 @@ namespace EpamExamThreeHighcharts
                     Assert.IsTrue((previous_employee_amount > employee_amount));
                 }
                 previous_employee_amount = employee_amount;
-            }
-        }
-
-
-        private static double ParseWithLocale(string value)
-        {
-            try
-            {
-                return double.Parse(value);
-            }
-            catch (FormatException)
-            {
-                return double.Parse(value.Replace('.', ','));
             }
         }
     }
